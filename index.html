@@ -106,7 +106,7 @@ a {
   font-size: 13px;
 }
 
-.catalog-status > span {
+.catalog-status-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -732,7 +732,7 @@ footer a span {
         <span class="brand-mark" aria-hidden="true"><span></span></span>
         <span><strong>SaaS Savings</strong><small>Deal desk</small></span>
       </a>
-      <div class="catalog-status"><span aria-hidden="true"></span>284 offers in the catalog</div>
+      <div class="catalog-status"><span class="catalog-status-dot" aria-hidden="true"></span><span id="catalog-count"></span></div>
     </header>
 
     <section class="hero" id="top">
@@ -814,6 +814,7 @@ footer a span {
     const percent = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 });
     const amountInput = document.getElementById("annual-amount");
     const serviceSelect = document.getElementById("service");
+    const catalogCount = document.getElementById("catalog-count");
     const typeBadge = document.getElementById("type-badge");
     const discountBadge = document.getElementById("discount-badge");
     const resultName = document.getElementById("result-name");
@@ -842,6 +843,7 @@ footer a span {
       serviceSelect.appendChild(group);
     }
 
+    catalogCount.textContent = services.length + " offers in the catalog";
     addGroup("Partner services", "Partner service");
     addGroup("Vendor services", "Vendor service");
 
