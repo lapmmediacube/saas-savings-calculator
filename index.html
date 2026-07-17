@@ -214,8 +214,8 @@ a {
   font-weight: 750;
 }
 
-.money-input,
-.select-wrap {
+.select-wrap,
+.service-amount-input {
   position: relative;
   display: flex;
   align-items: center;
@@ -226,20 +226,20 @@ a {
   transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
-.money-input:focus-within,
+.service-amount-input:focus-within,
 .select-wrap:focus-within {
   border-color: var(--violet);
   box-shadow: 0 0 0 4px rgba(109, 93, 252, 0.12);
 }
 
-.money-input > span {
+.service-amount-input > span {
   padding-left: 18px;
   color: var(--violet);
   font-size: 23px;
   font-weight: 800;
 }
 
-.money-input input,
+.service-amount-input input,
 .select-wrap select {
   width: 100%;
   min-width: 0;
@@ -249,13 +249,13 @@ a {
   color: var(--ink);
 }
 
-.money-input input {
+.service-amount-input input {
   padding: 16px 12px;
   font-size: 23px;
   font-weight: 700;
 }
 
-.money-input small {
+.service-amount-input small {
   flex: 0 0 auto;
   padding-right: 18px;
   color: var(--ink-soft);
@@ -298,6 +298,107 @@ a {
   margin-top: 22px;
 }
 
+.selected-services {
+  display: grid;
+  gap: 13px;
+  margin-top: 24px;
+}
+
+.selected-service {
+  padding: 18px;
+  border: 1px solid #d6d2c8;
+  border-radius: 16px;
+  background: #fbfaf6;
+}
+
+.selected-service-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.selected-service h3 {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+.selected-service .selection-meta {
+  margin-top: 9px;
+}
+
+.remove-service {
+  flex: 0 0 auto;
+  border: 0;
+  padding: 4px 0;
+  background: transparent;
+  color: #8a4652;
+  font-size: 11px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.remove-service:disabled {
+  color: #aaa6a0;
+  cursor: not-allowed;
+}
+
+.selected-service-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 15px;
+  align-items: end;
+  margin-top: 16px;
+}
+
+.selected-service-controls label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--ink-soft);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.service-amount-input {
+  min-height: 54px;
+  border-radius: 12px;
+}
+
+.service-amount-input > span {
+  padding-left: 15px;
+  font-size: 19px;
+}
+
+.service-amount-input input {
+  padding: 13px 10px;
+  font-size: 19px;
+}
+
+.service-amount-input small {
+  padding-right: 14px;
+  font-size: 9px;
+}
+
+.service-saving {
+  min-width: 108px;
+  padding-bottom: 8px;
+  color: var(--ink-soft);
+  font-size: 10px;
+  line-height: 1.35;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+.service-saving strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--violet);
+  font-size: 16px;
+  letter-spacing: -0.02em;
+  text-transform: none;
+}
+
 .type-badge,
 .discount-badge,
 .sheet-note {
@@ -320,6 +421,11 @@ a {
 .type-badge.vendor {
   background: var(--peach);
   color: #a25226;
+}
+
+.type-badge.mixed {
+  background: var(--violet-light);
+  color: #4c3ccf;
 }
 
 .discount-badge {
@@ -676,6 +782,16 @@ footer a span {
     grid-template-columns: 1fr;
   }
 
+  .selected-service-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .service-saving {
+    min-width: 0;
+    padding-bottom: 0;
+    text-align: left;
+  }
+
   .result-panel h2 {
     min-height: 0;
     margin-bottom: 32px;
@@ -740,42 +856,30 @@ footer a span {
       <div class="hero-copy">
         <p class="eyebrow">Budget intelligence</p>
         <h1>See what your software<span> could cost.</span></h1>
-        <p class="hero-intro">Choose a SaaS service, enter your annual spend, and get a clear savings estimate with every detail needed to start negotiations.</p>
+        <p class="hero-intro">Choose one or more SaaS services, enter each annual spend, and see your combined savings with every detail needed to start negotiations.</p>
       </div>
 
       <section class="calculator-shell" aria-label="SaaS discount calculator">
         <div class="input-panel">
           <div class="panel-heading">
             <span class="step">01</span>
-            <div><p>Build your estimate</p><span>Two details. Instant result.</span></div>
+            <div><p>Build your estimate</p><span>Add services. Enter each annual spend.</span></div>
           </div>
 
           <div class="field-group">
-            <label for="annual-amount">Annual payment amount</label>
-            <div class="money-input">
-              <span aria-hidden="true">$</span>
-              <input id="annual-amount" type="number" inputmode="decimal" min="0" step="0.01" value="25000" aria-describedby="amount-help">
-              <small>USD / year</small>
-            </div>
-            <p class="field-help" id="amount-help">Enter the total cost before any discount.</p>
-          </div>
-
-          <div class="field-group">
-            <label for="service">SaaS service</label>
+            <label for="service">Add a SaaS service</label>
             <div class="select-wrap">
-              <select id="service" aria-label="SaaS service"></select>
+              <select id="service" aria-label="SaaS service" aria-describedby="service-help"></select>
               <span class="select-arrow" aria-hidden="true">⌄</span>
             </div>
+            <p class="field-help" id="service-help">Select a service to add it to your combined estimate.</p>
           </div>
 
-          <div class="selection-meta" aria-live="polite">
-            <span id="type-badge" class="type-badge partner"></span>
-            <span id="discount-badge" class="discount-badge"></span>
-          </div>
+          <div id="selected-services" class="selected-services" aria-live="polite"></div>
         </div>
 
         <div class="result-panel" aria-live="polite">
-          <div class="result-topline"><span>Your annual outlook</span><span class="result-arrow" aria-hidden="true">↗</span></div>
+          <div class="result-topline"><span>Your combined annual outlook</span><span class="result-arrow" aria-hidden="true">↗</span></div>
           <h2 id="result-name"></h2>
           <div id="result-details"></div>
         </div>
@@ -787,7 +891,7 @@ footer a span {
         <p class="eyebrow">Next step</p>
         <span id="requirements-badge" class="type-badge partner"></span>
         <h2>What we need to start negotiations</h2>
-        <p>Prepare these details for <strong id="requirements-service"></strong>. The list updates automatically for partner and vendor services.</p>
+        <p>Prepare these details for <strong id="requirements-service"></strong>. Requirements are combined automatically across partner and vendor services.</p>
       </div>
       <div id="requirements-list" class="requirements-list"></div>
     </section>
@@ -813,16 +917,15 @@ footer a span {
     ]);
     const currency = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const percent = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 });
-    const amountInput = document.getElementById("annual-amount");
     const serviceSelect = document.getElementById("service");
+    const selectedServices = document.getElementById("selected-services");
     const catalogCount = document.getElementById("catalog-count");
-    const typeBadge = document.getElementById("type-badge");
-    const discountBadge = document.getElementById("discount-badge");
     const resultName = document.getElementById("result-name");
     const resultDetails = document.getElementById("result-details");
     const requirementsBadge = document.getElementById("requirements-badge");
     const requirementsService = document.getElementById("requirements-service");
     const requirementsList = document.getElementById("requirements-list");
+    const selectedAmounts = new Map([[services[0].id, 25000]]);
 
     function money(value) {
       return currency.format(Number.isFinite(value) ? value : 0);
@@ -845,6 +948,10 @@ footer a span {
     }
 
     catalogCount.textContent = services.length + " offers in the catalog";
+    const placeholderOption = document.createElement("option");
+    placeholderOption.value = "";
+    placeholderOption.textContent = "Choose a service to add…";
+    serviceSelect.appendChild(placeholderOption);
     addGroup("Partner services", "Partner service");
     addGroup("Vendor services", "Vendor service");
 
@@ -855,11 +962,50 @@ footer a span {
       return rateText(service.discountMax);
     }
 
-    function renderRequirements(service, isVendor) {
-      const base = isVendor ? vendorRequirements : partnerRequirements;
-      const extra = service.negotiationNote
-        ? [{ title: "Spreadsheet negotiation note", detail: service.negotiationNote }]
-        : [];
+    function getSelectedServices() {
+      return Array.from(selectedAmounts.keys()).map(function(id) {
+        return services.find(function(service) { return service.id === id; });
+      }).filter(Boolean);
+    }
+
+    function amountFor(service) {
+      return Math.max(0, Number(selectedAmounts.get(service.id)) || 0);
+    }
+
+    function refreshServiceOptions() {
+      Array.from(serviceSelect.options).forEach(function(option) {
+        if (!option.value) {
+          option.disabled = false;
+          option.textContent = selectedAmounts.size ? "Choose another service to add…" : "Choose a service to add…";
+          return;
+        }
+        option.disabled = selectedAmounts.has(option.value);
+      });
+      serviceSelect.value = "";
+    }
+
+    function renderRequirements(selected) {
+      const hasVendor = selected.some(function(service) { return service.classification === "Vendor service"; });
+      const hasPartner = selected.some(function(service) { return service.classification === "Partner service"; });
+      const base = hasVendor ? vendorRequirements : partnerRequirements;
+      const extra = selected.filter(function(service) { return Boolean(service.negotiationNote); }).map(function(service) {
+        return { title: service.name + ": spreadsheet negotiation note", detail: service.negotiationNote };
+      });
+
+      if (hasVendor && hasPartner) {
+        requirementsBadge.className = "type-badge mixed";
+        requirementsBadge.textContent = "Mixed services";
+      } else if (hasVendor) {
+        requirementsBadge.className = "type-badge vendor";
+        requirementsBadge.textContent = "Vendor services";
+      } else {
+        requirementsBadge.className = "type-badge partner";
+        requirementsBadge.textContent = "Partner services";
+      }
+
+      requirementsService.textContent = selected.length === 1
+        ? selected[0].name
+        : selected.length + " selected services";
       requirementsList.replaceChildren();
       base.concat(extra).forEach(function(requirement, index) {
         const article = document.createElement("article");
@@ -887,58 +1033,173 @@ footer a span {
       });
     }
 
-    function render() {
-      const service = services.find(function(item) { return item.id === serviceSelect.value; }) || services[0];
-      const annualAmount = Math.max(0, Number(amountInput.value) || 0);
-      const isVendor = service.classification === "Vendor service";
-      const label = discountLabel(service);
-      const badgeClass = "type-badge " + (isVendor ? "vendor" : "partner");
+    function renderSelectedServices(selected) {
+      selectedServices.replaceChildren();
+      selected.forEach(function(service) {
+        const card = document.createElement("article");
+        card.className = "selected-service";
+        card.dataset.serviceCard = service.id;
 
-      typeBadge.className = badgeClass;
-      typeBadge.textContent = service.classification;
-      requirementsBadge.className = badgeClass;
-      requirementsBadge.textContent = service.classification;
-      discountBadge.textContent = label;
-      resultName.textContent = service.name;
-      requirementsService.textContent = service.name;
-      renderRequirements(service, isVendor);
+        const head = document.createElement("div");
+        head.className = "selected-service-head";
+        const copy = document.createElement("div");
+        const heading = document.createElement("h3");
+        heading.textContent = service.name;
+        const meta = document.createElement("div");
+        meta.className = "selection-meta";
+        const type = document.createElement("span");
+        type.className = "type-badge " + (service.classification === "Vendor service" ? "vendor" : "partner");
+        type.textContent = service.classification;
+        const discount = document.createElement("span");
+        discount.className = "discount-badge";
+        discount.textContent = discountLabel(service);
+        meta.appendChild(type);
+        meta.appendChild(discount);
+        copy.appendChild(heading);
+        copy.appendChild(meta);
 
-      if (service.discountMax === null) {
-        resultDetails.innerHTML =
-          '<div class="custom-quote">' +
-          '<span>Rate confirmed after review</span>' +
-          '<strong>Custom quote</strong>' +
-          '<p>The workbook does not list a discount for this service. Share the details below and we’ll confirm the available savings.</p>' +
-          '</div>';
-        return;
-      }
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "remove-service";
+        remove.dataset.removeService = service.id;
+        remove.disabled = selected.length === 1;
+        remove.setAttribute("aria-label", "Remove " + service.name);
+        remove.textContent = "Remove";
+        head.appendChild(copy);
+        head.appendChild(remove);
 
-      const paymentAtBestRate = annualAmount * (1 - service.discountMax);
-      const savingsAtBestRate = annualAmount * service.discountMax;
-      const rangePaymentHigh = annualAmount * (1 - service.discountMin);
-      const rangeSavingsLow = annualAmount * service.discountMin;
-      const isRange = service.discountType === "range";
-      const isEstimate = service.discountType === "up-to" || isRange;
-      const paymentLabel = isRange ? "Annual payment range" : (isEstimate ? "Payment at max. discount" : "You will pay");
-      const savingsLabel = isRange ? "Savings range" : (isEstimate ? "You could save up to" : "Exact amount saved");
-      const paymentValue = isRange ? money(paymentAtBestRate) + "–" + money(rangePaymentHigh) : money(paymentAtBestRate);
-      const savingsValue = isRange ? money(rangeSavingsLow) + "–" + money(savingsAtBestRate) : money(savingsAtBestRate);
-      const note = isEstimate
-        ? "This offer is marked as “up to” or a range in the source workbook. The final rate is confirmed during negotiation."
-        : "Calculated exactly from the discount rate listed in the source workbook.";
+        const controls = document.createElement("div");
+        controls.className = "selected-service-controls";
+        const amountGroup = document.createElement("div");
+        const label = document.createElement("label");
+        const inputId = "amount-" + service.id;
+        label.htmlFor = inputId;
+        label.textContent = "Annual payment amount";
+        const inputWrap = document.createElement("div");
+        inputWrap.className = "service-amount-input";
+        const currencySign = document.createElement("span");
+        currencySign.setAttribute("aria-hidden", "true");
+        currencySign.textContent = "$";
+        const input = document.createElement("input");
+        input.id = inputId;
+        input.type = "number";
+        input.inputMode = "decimal";
+        input.min = "0";
+        input.step = "0.01";
+        input.value = String(selectedAmounts.get(service.id));
+        input.dataset.serviceAmount = service.id;
+        input.setAttribute("aria-label", service.name + " annual payment amount");
+        const unit = document.createElement("small");
+        unit.textContent = "USD / year";
+        inputWrap.appendChild(currencySign);
+        inputWrap.appendChild(input);
+        inputWrap.appendChild(unit);
+        amountGroup.appendChild(label);
+        amountGroup.appendChild(inputWrap);
+
+        const saving = document.createElement("div");
+        saving.className = "service-saving";
+        saving.textContent = service.discountMax === null ? "Savings" : "Potential savings";
+        const savingValue = document.createElement("strong");
+        savingValue.dataset.serviceSaving = service.id;
+        savingValue.textContent = service.discountMax === null
+          ? "Custom quote"
+          : money(amountFor(service) * service.discountMax);
+        saving.appendChild(savingValue);
+        controls.appendChild(amountGroup);
+        controls.appendChild(saving);
+
+        card.appendChild(head);
+        card.appendChild(controls);
+        selectedServices.appendChild(card);
+      });
+    }
+
+    function calculateTotals(selected) {
+      let totalSpend = 0;
+      let totalPayment = 0;
+      let totalSavings = 0;
+      let customQuotes = 0;
+      let estimatedOffers = 0;
+
+      selected.forEach(function(service) {
+        const amount = amountFor(service);
+        totalSpend += amount;
+        if (service.discountMax === null) {
+          customQuotes += 1;
+          totalPayment += amount;
+          return;
+        }
+        const saving = amount * service.discountMax;
+        totalSavings += saving;
+        totalPayment += amount - saving;
+        if (service.discountType === "up-to" || service.discountType === "range") estimatedOffers += 1;
+      });
+
+      return { totalSpend, totalPayment, totalSavings, customQuotes, estimatedOffers };
+    }
+
+    function renderTotals(selected) {
+      const totals = calculateTotals(selected);
+      const totalSpend = totals.totalSpend;
+      const totalPayment = totals.totalPayment;
+      const totalSavings = totals.totalSavings;
+      const customQuotes = totals.customQuotes;
+      const estimatedOffers = totals.estimatedOffers;
+
+      resultName.textContent = selected.length === 1 ? selected[0].name : selected.length + " selected services";
+      const paymentLabel = estimatedOffers ? "Payment at listed maximum rates" : (customQuotes ? "Payment before custom quotes" : "Total annual payment");
+      const savingsLabel = estimatedOffers ? "Total savings up to" : (customQuotes ? "Confirmed listed savings" : "Exact total savings");
+      const effectiveRate = totalSpend ? totalSavings / totalSpend : 0;
+      const notes = [];
+      if (estimatedOffers) notes.push("Some selected offers are marked as “up to” or a range. Their final rates are confirmed during negotiation.");
+      if (customQuotes) notes.push(customQuotes + " selected " + (customQuotes === 1 ? "service requires a custom quote and is" : "services require custom quotes and are") + " currently counted at full price.");
+      if (!notes.length) notes.push("Calculated exactly from the discount rates listed in the source workbook.");
 
       resultDetails.innerHTML =
         '<div class="result-grid">' +
-          '<div><span>' + paymentLabel + '</span><strong>' + paymentValue + '</strong></div>' +
-          '<div><span>' + savingsLabel + '</span><strong class="saving">' + savingsValue + '</strong></div>' +
+          '<div><span>' + paymentLabel + '</span><strong>' + money(totalPayment) + '</strong></div>' +
+          '<div><span>' + savingsLabel + '</span><strong class="saving">' + money(totalSavings) + '</strong></div>' +
         '</div>' +
-        '<div class="savings-scale" aria-hidden="true"><span style="width:' + Math.min(service.discountMax * 100, 100) + '%"></span></div>' +
-        '<div class="scale-labels"><span>Listed spend ' + money(annualAmount) + '</span><strong>' + label + ' discount</strong></div>' +
-        '<p class="result-note">' + note + '</p>';
+        '<div class="savings-scale" aria-hidden="true"><span style="width:' + Math.min(effectiveRate * 100, 100) + '%"></span></div>' +
+        '<div class="scale-labels"><span>Total listed spend ' + money(totalSpend) + '</span><strong>' + rateText(effectiveRate) + ' combined savings</strong></div>' +
+        '<p class="result-note">' + notes.join(" ") + '</p>';
     }
 
-    serviceSelect.addEventListener("change", render);
-    amountInput.addEventListener("input", render);
+    function render() {
+      const selected = getSelectedServices();
+      refreshServiceOptions();
+      renderSelectedServices(selected);
+      renderTotals(selected);
+      renderRequirements(selected);
+    }
+
+    serviceSelect.addEventListener("change", function() {
+      if (serviceSelect.value && !selectedAmounts.has(serviceSelect.value)) {
+        selectedAmounts.set(serviceSelect.value, 0);
+        render();
+      }
+    });
+
+    selectedServices.addEventListener("input", function(event) {
+      const input = event.target.closest("input[data-service-amount]");
+      if (!input) return;
+      selectedAmounts.set(input.dataset.serviceAmount, Math.max(0, Number(input.value) || 0));
+      const service = services.find(function(item) { return item.id === input.dataset.serviceAmount; });
+      const saving = selectedServices.querySelector('[data-service-saving="' + input.dataset.serviceAmount + '"]');
+      if (saving && service) {
+        saving.textContent = service.discountMax === null ? "Custom quote" : money(amountFor(service) * service.discountMax);
+      }
+      renderTotals(getSelectedServices());
+    });
+
+    selectedServices.addEventListener("click", function(event) {
+      const button = event.target.closest("button[data-remove-service]");
+      if (!button || selectedAmounts.size === 1) return;
+      selectedAmounts.delete(button.dataset.removeService);
+      render();
+    });
+
     render();
   </script>
 </body>
