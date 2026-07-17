@@ -1,0 +1,55 @@
+name: Sync spreadsheet
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-spreadsheet
+  cancel-in-progress: true
+
+jobs:
+  refresh-calculator:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the website
+        uses: actions/checkout@v4
+
+      - name: Download the source workbook
+        env:
+          SOURCE_FILE_ID: 17T0nkshrq9QiiP4fggOQ4FPGGXt6ZYMC
+        run: |
+          set -euo pipefail
+          output="${RUNNER_TEMP}/services.xlsx"
+          urls=(
+            "https://drive.usercontent.google.com/download?id=${SOURCE_FILE_ID}&export=download&confirm=t"
+            "https://drive.google.com/uc?export=download&id=${SOURCE_FILE_ID}"
+          )
+          for url in "${urls[@]}"; do
+            if curl --fail --location --retry 3 --silent --show-error "$url" --output "$output" \
+              && python -m zipfile --test "$output"; then
+              exit 0
+            fi
+          done
+          echo "Could not download a valid workbook. Confirm that anyone with the link can view the source file." >&2
+          exit 1
+
+      - name: Refresh the calculator data
+        run: python scripts/sync_services.py "${RUNNER_TEMP}/services.xlsx" index.html
+
+      - name: Publish changes
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "The calculator is already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Update calculator from spreadsheet"
+          git push
